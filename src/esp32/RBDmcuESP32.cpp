@@ -197,7 +197,7 @@ void IRAM_ATTR onTimerISR()
 				digitalWrite(dimOutPin[k], LOW);
 			}
 			
-			if (dimCounter[k] >=  (dimPulseBegin[k] + pulseWidth) )
+			if (dimCounter[k] >=  (dimPulseBegin[k]-2 + pulseWidth) )
 			{
 				digitalWrite(dimOutPin[k], LOW);
 				zeroCross[k] = 0;
