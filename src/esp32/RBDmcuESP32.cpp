@@ -190,13 +190,11 @@ void IRAM_ATTR onTimerISR()
 			/*****
 			 * DEFAULT DIMMING MODE (NOT TOGGLE)
 			 *****/
-			if (dimCounter[k] >= dimPulseBegin[k]-2 && dimPulseBegin[k] != 100) //correction to avoid transient state and get a clean "Off" state
+			if (dimCounter[k] == dimPulseBegin[k]-2 && dimPulseBegin[k] != 100) //correction to avoid transient state and get a clean "Off" state, shift the dimPulseBegin to correct zero cross timing
 			{
 				digitalWrite(dimOutPin[k], HIGH);	
-			} else  {
-				digitalWrite(dimOutPin[k], LOW);
 			}
-			
+
 			if (dimCounter[k] >=  (dimPulseBegin[k]-2 + pulseWidth) )
 			{
 				digitalWrite(dimOutPin[k], LOW);
