@@ -4,7 +4,6 @@
 
 
 int pulseWidth = 1;
-// int pulseWidth = 10;
 volatile int current_dim = 0;
 int all_dim = 3;
 int rise_fall = true;
@@ -51,15 +50,13 @@ void dimmerLamp::timer_init(void)
 	hw_timer_t * timer = NULL;
 	// Use 1st timer of 4 (counted from zero).
   	// Set 80 divider for prescaler (see ESP32 Technical Reference Manual for more info).
-	timer = timerBegin(0, 80, true);
-// 	timer = timerBegin(0, 250, true);
+	timer = timerBegin(0, 250, true);
 	// Attach onTimer function to our timer.
 	timerAttachInterrupt(timer, &onTimerISR, true);
 	// Set alarm to call onTimer function every second (value in microseconds).
   	// Repeat the alarm (third parameter)
-  	timerAlarmWrite(timer, 100, true);
 // 	timerAlarmWrite(timer, 30, true);
-// 	timerAlarmWrite(timer, 32, true);
+	timerAlarmWrite(timer, 32, true); // 10ms
   	// Start an alarm
   	timerAlarmEnable(timer);
 }
