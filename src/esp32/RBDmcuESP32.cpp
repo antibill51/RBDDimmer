@@ -55,8 +55,8 @@ void dimmerLamp::timer_init(void)
 	timerAttachInterrupt(timer, &onTimerISR, true);
 	// Set alarm to call onTimer function every second (value in microseconds).
   	// Repeat the alarm (third parameter)
-// 	timerAlarmWrite(timer, 30, true);
-	timerAlarmWrite(timer, 32, true); // 10ms
+	timerAlarmWrite(timer, 30, true); // 9.375ms 
+	// timerAlarmWrite(timer, 32, true); // 10ms ( utile si dimPulseBegin[k] -2)
   	// Start an alarm
   	timerAlarmEnable(timer);
 }
@@ -72,8 +72,10 @@ void dimmerLamp::begin(DIMMER_MODE_typedef DIMMER_MODE, ON_OFF_typedef ON_OFF)
 {
 	dimMode[this->current_num] = DIMMER_MODE;
 	dimState[this->current_num] = ON_OFF;
-	timer_init();
-	ext_int_init();	
+	if (current_num == 0){ // Un seul timer si plusieurs rbd
+		timer_init();
+		ext_int_init();	
+	}
 }
 
 void dimmerLamp::setPower(int power)
@@ -187,12 +189,12 @@ void IRAM_ATTR onTimerISR()
 			/*****
 			 * DEFAULT DIMMING MODE (NOT TOGGLE)
 			 *****/
-			if (dimCounter[k] == dimPulseBegin[k]-2 && dimPulseBegin[k] != 100) //correction to avoid transient state and get a clean "Off" state, shift the dimPulseBegin to correct zero cross timing
+			if (dimCounter[k] == dimPulseBegin[k] && dimPulseBegin[k] != 100) //correction to avoid transient state and get a clean "Off" state, shift the dimPulseBegin to correct zero cross timing
 			{
 				digitalWrite(dimOutPin[k], HIGH);	
 			}
 
-			if (dimCounter[k] >=  (dimPulseBegin[k]-2 + pulseWidth) )
+			if (dimCounter[k] >=  (dimPulseBegin[k] + pulseWidth) )
 			{
 				digitalWrite(dimOutPin[k], LOW);
 				zeroCross[k] = 0;
