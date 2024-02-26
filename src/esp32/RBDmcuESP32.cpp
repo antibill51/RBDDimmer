@@ -4,6 +4,7 @@
 
 
 int pulseWidth = 1;
+//int pulseWidth = 10;
 volatile int current_dim = 0;
 int all_dim = 3;
 int rise_fall = true;
@@ -78,22 +79,47 @@ void dimmerLamp::begin(DIMMER_MODE_typedef DIMMER_MODE, ON_OFF_typedef ON_OFF)
 	}
 }
 
-void dimmerLamp::setPower(int power)
+void dimmerLamp::setPower(float power)
 {	
+
 	if (power >= 99) 
 	{
 		power = 99;
 	}
+
+	int intPower = int(power);
+    float decimalPart = power - intPower;
+    
+	// Trouver les deux valeurs les plus proches de power
+    uint8_t lowerIndex = intPower;
+    uint8_t upperIndex = intPower + 1;
+
+    // Vérifier les limites du tableau
+    if (upperIndex >= sizeof(powerBuf)) {
+        upperIndex = sizeof(powerBuf) - 1;
+    }
+
+	// Interpoler la valeur
+	float interpolatedValue = powerBuf[lowerIndex] + (powerBuf[upperIndex] - powerBuf[lowerIndex]) * decimalPart;		
+
 	dimPower[this->current_num] = power;
-	dimPulseBegin[this->current_num] = powerBuf[power];
+	dimPulseBegin[this->current_num] = interpolatedValue;
 	
 	delay(1);
 }
 
 int dimmerLamp::getPower(void)
 {
-	if (dimState[this->current_num] == ON)
-		return dimPower[this->current_num];
+	if (dimState[this->current_num] == ON){
+		if (dimPower[this->current_num] == 99) 
+		{
+			return 100;
+		}
+		else
+		{
+			return dimPower[this->current_num];
+		}
+	}
 	else return 0;
 }
 
