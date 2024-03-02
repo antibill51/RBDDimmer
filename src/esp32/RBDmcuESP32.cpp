@@ -108,7 +108,7 @@ void dimmerLamp::setPower(float power)
 	delay(1);
 }
 
-int dimmerLamp::getPower(void)
+float dimmerLamp::getPower(void)
 {
 	if (dimState[this->current_num] == ON){
 		if (dimPower[this->current_num] == 99) 
